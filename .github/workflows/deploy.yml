@@ -32,7 +32,8 @@ jobs:
       - run: go version
 
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2.6.0
+        #uses: peaceiris/actions-hugo@v2.6.0
+        uses: ricomariani/actions-hugo@16ab92f9dbb1f28bb75268a4a5eede16cdc2a6e2
         with:
           hugo-version: "latest"
           extended: true
