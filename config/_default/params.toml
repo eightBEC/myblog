@@ -6,7 +6,7 @@ favicon = "/favicon.png"
 
 [footer]
 since = 2017
-customText = "<a href='/imprint.html'>Impressum</a>"
+customText = "Disclaimer: The postings on this site are my own and don't necessarily represent IBM's positions, strategies or opinions."
 
 [dateFormat]
 published = "Jan 02, 2006"
