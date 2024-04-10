@@ -2,7 +2,8 @@
 title: Serving LLMs using Huggingface Text Generation Inference Server on Kubernetes
 description: Serving LLMs with Huggingface Text Generation Inference Server robustly in minutes
 slug: huggingface-tgi-serving
-date: 2024-15-03 00:00:00+0000
+date: 2024-03-15 00:00:00+0000
+
 
 categories:
     - LLM
