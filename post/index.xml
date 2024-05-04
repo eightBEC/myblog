@@ -1,0 +1,1148 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Jan's Blog</title><link>https://iamjanforster.de/post/</link><description>Recent content in Posts on Jan's Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 May 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://iamjanforster.de/post/index.xml" rel="self" type="application/rss+xml"/><item><title>Training LLMs faster and with less memory with Unsloth</title><link>https://iamjanforster.de/p/unsloth-fast-llm-training/</link><pubDate>Fri, 03 May 2024 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/unsloth-fast-llm-training/</guid><description>&lt;h2 id="intro">
+&lt;a href="#intro">#&lt;/a>
+Intro
+&lt;/h2>&lt;p>Training LLMs is oftern limited by the available VRAM of your GPU or other resources like time. &lt;a class="link" href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener"
+>Unsloth&lt;/a> is a great library that helps you train LLMs faster and with less memory. Based on their &lt;a class="link" href="https://github.com/unslothai/unsloth?tab=readme-ov-file#-performance-benchmarking" target="_blank" rel="noopener"
+>benchmarks&lt;/a> up to 2x faster and with up to 80% less memory.&lt;/p>
+&lt;p>The following examples shows a minimum &lt;strong>training code example&lt;/strong> and a &lt;strong>Dockerfile&lt;/strong> you can use in your environment to get started training your models faster.&lt;/p>
+&lt;h2 id="prerequisites">
+&lt;a href="#prerequisites">#&lt;/a>
+Prerequisites
+&lt;/h2>&lt;ul>
+&lt;li>Docker / Podman&lt;/li>
+&lt;/ul>
+&lt;h3 id="example-minimum-trainer-code-for-unsloth">
+&lt;a href="#example-minimum-trainer-code-for-unsloth">#&lt;/a>
+Example: Minimum Trainer Code for Unsloth
+&lt;/h3>&lt;p>The following example shows how to fine-tune your model with Unsloth. The code is put together based on the examples provided on &lt;a class="link" href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener"
+>Unsloth Github&lt;/a>.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt"> 10
+&lt;/span>&lt;span class="lnt"> 11
+&lt;/span>&lt;span class="lnt"> 12
+&lt;/span>&lt;span class="lnt"> 13
+&lt;/span>&lt;span class="lnt"> 14
+&lt;/span>&lt;span class="lnt"> 15
+&lt;/span>&lt;span class="lnt"> 16
+&lt;/span>&lt;span class="lnt"> 17
+&lt;/span>&lt;span class="lnt"> 18
+&lt;/span>&lt;span class="lnt"> 19
+&lt;/span>&lt;span class="lnt"> 20
+&lt;/span>&lt;span class="lnt"> 21
+&lt;/span>&lt;span class="lnt"> 22
+&lt;/span>&lt;span class="lnt"> 23
+&lt;/span>&lt;span class="lnt"> 24
+&lt;/span>&lt;span class="lnt"> 25
+&lt;/span>&lt;span class="lnt"> 26
+&lt;/span>&lt;span class="lnt"> 27
+&lt;/span>&lt;span class="lnt"> 28
+&lt;/span>&lt;span class="lnt"> 29
+&lt;/span>&lt;span class="lnt"> 30
+&lt;/span>&lt;span class="lnt"> 31
+&lt;/span>&lt;span class="lnt"> 32
+&lt;/span>&lt;span class="lnt"> 33
+&lt;/span>&lt;span class="lnt"> 34
+&lt;/span>&lt;span class="lnt"> 35
+&lt;/span>&lt;span class="lnt"> 36
+&lt;/span>&lt;span class="lnt"> 37
+&lt;/span>&lt;span class="lnt"> 38
+&lt;/span>&lt;span class="lnt"> 39
+&lt;/span>&lt;span class="lnt"> 40
+&lt;/span>&lt;span class="lnt"> 41
+&lt;/span>&lt;span class="lnt"> 42
+&lt;/span>&lt;span class="lnt"> 43
+&lt;/span>&lt;span class="lnt"> 44
+&lt;/span>&lt;span class="lnt"> 45
+&lt;/span>&lt;span class="lnt"> 46
+&lt;/span>&lt;span class="lnt"> 47
+&lt;/span>&lt;span class="lnt"> 48
+&lt;/span>&lt;span class="lnt"> 49
+&lt;/span>&lt;span class="lnt"> 50
+&lt;/span>&lt;span class="lnt"> 51
+&lt;/span>&lt;span class="lnt"> 52
+&lt;/span>&lt;span class="lnt"> 53
+&lt;/span>&lt;span class="lnt"> 54
+&lt;/span>&lt;span class="lnt"> 55
+&lt;/span>&lt;span class="lnt"> 56
+&lt;/span>&lt;span class="lnt"> 57
+&lt;/span>&lt;span class="lnt"> 58
+&lt;/span>&lt;span class="lnt"> 59
+&lt;/span>&lt;span class="lnt"> 60
+&lt;/span>&lt;span class="lnt"> 61
+&lt;/span>&lt;span class="lnt"> 62
+&lt;/span>&lt;span class="lnt"> 63
+&lt;/span>&lt;span class="lnt"> 64
+&lt;/span>&lt;span class="lnt"> 65
+&lt;/span>&lt;span class="lnt"> 66
+&lt;/span>&lt;span class="lnt"> 67
+&lt;/span>&lt;span class="lnt"> 68
+&lt;/span>&lt;span class="lnt"> 69
+&lt;/span>&lt;span class="lnt"> 70
+&lt;/span>&lt;span class="lnt"> 71
+&lt;/span>&lt;span class="lnt"> 72
+&lt;/span>&lt;span class="lnt"> 73
+&lt;/span>&lt;span class="lnt"> 74
+&lt;/span>&lt;span class="lnt"> 75
+&lt;/span>&lt;span class="lnt"> 76
+&lt;/span>&lt;span class="lnt"> 77
+&lt;/span>&lt;span class="lnt"> 78
+&lt;/span>&lt;span class="lnt"> 79
+&lt;/span>&lt;span class="lnt"> 80
+&lt;/span>&lt;span class="lnt"> 81
+&lt;/span>&lt;span class="lnt"> 82
+&lt;/span>&lt;span class="lnt"> 83
+&lt;/span>&lt;span class="lnt"> 84
+&lt;/span>&lt;span class="lnt"> 85
+&lt;/span>&lt;span class="lnt"> 86
+&lt;/span>&lt;span class="lnt"> 87
+&lt;/span>&lt;span class="lnt"> 88
+&lt;/span>&lt;span class="lnt"> 89
+&lt;/span>&lt;span class="lnt"> 90
+&lt;/span>&lt;span class="lnt"> 91
+&lt;/span>&lt;span class="lnt"> 92
+&lt;/span>&lt;span class="lnt"> 93
+&lt;/span>&lt;span class="lnt"> 94
+&lt;/span>&lt;span class="lnt"> 95
+&lt;/span>&lt;span class="lnt"> 96
+&lt;/span>&lt;span class="lnt"> 97
+&lt;/span>&lt;span class="lnt"> 98
+&lt;/span>&lt;span class="lnt"> 99
+&lt;/span>&lt;span class="lnt">100
+&lt;/span>&lt;span class="lnt">101
+&lt;/span>&lt;span class="lnt">102
+&lt;/span>&lt;span class="lnt">103
+&lt;/span>&lt;span class="lnt">104
+&lt;/span>&lt;span class="lnt">105
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Python" data-lang="Python">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># file: unsloth_trainer.py&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">os&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">torch&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">transformers&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">TrainingArguments&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">trl&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">SFTTrainer&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">DataCollatorForCompletionOnlyLM&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">datasets&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">Dataset&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">load_from_disk&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">unsloth&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">FastLanguageModel&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">MODEL_ID&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;unsloth/gemma-7b-bnb-4bit&amp;#34;&lt;/span> &lt;span class="c1"># Quantized models from unsloth for faster downloading&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">TRAINING_DATA_PATH&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;path/to/training-dataset&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">OUTPUT_DATA_PATH&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;path/where/model/is/stored&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">NUM_EPOCHS&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Load model&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">model&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">tokenizer&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">FastLanguageModel&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">from_pretrained&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">model_name&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">MODEL_ID&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">max_seq_length&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">2048&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1"># adjust to your sequence length&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">dtype&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">None&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">load_in_4bit&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">True&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Do model patching and add fast LoRA weights&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">model&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">FastLanguageModel&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get_peft_model&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">model&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">r&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">target_modules&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;q_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;k_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;v_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;o_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;gate_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;up_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;down_proj&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">lora_alpha&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">32&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">lora_dropout&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">bias&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;none&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">use_gradient_checkpointing&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">True&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">random_state&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">1133&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">use_rslora&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">loftq_config&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">None&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">dataset&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">ds&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">load_from_disk&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">TRAINING_DATA_PATH&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">sft_trainer&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">SFTTrainer&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">model&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">model&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">tokenizer&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">tokenizer&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">train_dataset&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">dataset&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">data_collator&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">data_collator&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">formatting_func&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">format_prompts_func&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">max_seq_length&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">max_seq_length&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">dataset_num_proc&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">2&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">packing&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">args&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">TrainingArguments&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">gradient_accumulation_steps&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">4&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">auto_find_batch_size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="kc">True&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">warmup_steps&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">num_train_epochs&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">NUM_EPOCHS&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">learning_rate&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mf">2.5e-5&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">fp16&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="ow">not&lt;/span> &lt;span class="n">torch&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">cuda&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">is_bf16_supported&lt;/span>&lt;span class="p">(),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">bf16&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">torch&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">cuda&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">is_bf16_supported&lt;/span>&lt;span class="p">(),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">logging_steps&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">optim&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;adamw_8bit&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">weight_decay&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mf">0.01&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">lr_scheduler_type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;linear&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">seed&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">1133&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">output_dir&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">OUTPUT_DATA_PATH&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">sft_trainer&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">train&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">try&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">model&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">save_pretrained_merged&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">os&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">join&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">OUTPUT_DATA_PATH&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;model-16bit&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">tokenizer&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">save_method&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;merged_16bit&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">except&lt;/span> &lt;span class="ne">Exception&lt;/span> &lt;span class="k">as&lt;/span> &lt;span class="n">e&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;Error saving merged_16bit model&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">e&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">try&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># Merge to 4bit&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">model&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">save_pretrained_merged&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">os&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">join&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">OUTPUT_DATA_PATH&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;model-4bit&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">tokenizer&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">save_method&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;merged_4bit&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">except&lt;/span> &lt;span class="ne">Exception&lt;/span> &lt;span class="k">as&lt;/span> &lt;span class="n">e&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;Error saving merged_4bit model&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">e&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">try&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># Just LoRA adapters&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">model&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">save_pretrained_merged&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">os&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">join&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">OUTPUT_DATA_PATH&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;model-lora&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">tokenizer&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">save_method&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;lora&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">except&lt;/span> &lt;span class="ne">Exception&lt;/span> &lt;span class="k">as&lt;/span> &lt;span class="n">e&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;Error saving lora model&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">e&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="example-dockerfile-for-unsloth">
+&lt;a href="#example-dockerfile-for-unsloth">#&lt;/a>
+Example: Dockerfile for Unsloth
+&lt;/h3>&lt;p>This Dockerfile uses the NVIDIA CUDA base image to provide a stable foundation. If you wanto to run this on Red Hat OpenShift please remember to add the non-priveleged user accordingly.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span class="line">&lt;span class="cl">&lt;span class="c"># Start from the NVIDIA CUDA base image&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="s"> nvidia/cuda:12.1.0-base-ubuntu22.04&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Set a fixed model cache directory.&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">ENV&lt;/span> &lt;span class="nv">TORCH_HOME&lt;/span>&lt;span class="o">=&lt;/span>/root/.cache/torch&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Install Python and necessary packages&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> apt-get update &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> apt-get install -y --no-install-recommends &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> wget build-essential python3.10 python3-pip python3.10-dev &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> git &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> apt-get clean &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Update pip and setuptools&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> python3.10 -m pip install --upgrade pip setuptools wheel&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Install miniconda&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">ENV&lt;/span> CONDA_DIR /opt/conda&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> /bin/bash ~/miniconda.sh -b -p /opt/conda&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">ENV&lt;/span> &lt;span class="nv">PATH&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$CONDA_DIR&lt;/span>/bin:&lt;span class="nv">$PATH&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Install PyTorch with CUDA 12.1 support and other essential packages&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Use a dedicated conda env &lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> conda create --name unsloth_env &lt;span class="nv">python&lt;/span>&lt;span class="o">=&lt;/span>3.10&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;source activate unsloth_env&amp;#34;&lt;/span> &amp;gt; ~/.bashrc&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">ENV&lt;/span> PATH /opt/conda/envs/unsloth_env/bin:&lt;span class="nv">$PATH&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># As described in the Unsloth.ai Github&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> conda install -n unsloth_env -y pytorch-cuda&lt;span class="o">=&lt;/span>12.1 pytorch cudatoolkit xformers -c pytorch -c nvidia -c xformers&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> pip install &lt;span class="s2">&amp;#34;unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git&amp;#34;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> pip install matplotlib&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> pip install --no-deps trl peft accelerate bitsandbytes&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">RUN&lt;/span> pip install autoawq&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># Copy the fine-tuning script into the container&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">COPY&lt;/span> ./unsloth_trainer.py /trainer/unsloth.trainer.py&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">WORKDIR&lt;/span>&lt;span class="s"> /trainer&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="c"># endless running task to avoid container to be stopped&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="k">CMD&lt;/span> &lt;span class="p">[&lt;/span> &lt;span class="s2">&amp;#34;/bin/sh&amp;#34;&lt;/span> &lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;-c&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;tail -f /dev/null&amp;#34;&lt;/span> &lt;span class="p">]&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="further-information">
+&lt;a href="#further-information">#&lt;/a>
+Further information
+&lt;/h2>&lt;p>The sample python and Dockerfiles can also be found on my &lt;a class="link" href="https://github.com/eightBEC/unsloth-docker/tree/main" target="_blank" rel="noopener"
+>Github&lt;/a>.
+For those of you interested in diving deeper, please refer to the &lt;a class="link" href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener"
+>Unsloth Github&lt;/a> for the latest updates, models, etc. - This library is developing balzingly fast.&lt;/p></description></item><item><title>Serving LLMs using Huggingface Text Generation Inference Server on Kubernetes</title><link>https://iamjanforster.de/p/huggingface-tgi-serving/</link><pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/huggingface-tgi-serving/</guid><description>&lt;h2 id="intro">
+&lt;a href="#intro">#&lt;/a>
+Intro
+&lt;/h2>&lt;p>In case you want to host your own LLM instance of popular models like Mistral, Llama-2 or your own fine-tuned version of one of these models, Hugginface Text Generation Inference (TGI) is a great tool to get the job done. Often this requires running your inference on a Kubernetes or Openshift cluster providing the necessary GPU infrastructure.&lt;/p>
+&lt;p>In this post, I&amp;rsquo;ll show a quick example of how to get your own LLM instance up and running on your Kubernetes cluster.&lt;/p>
+&lt;h2 id="prerequisite">
+&lt;a href="#prerequisite">#&lt;/a>
+Prerequisite
+&lt;/h2>&lt;p>A suitable GPU (A10, A100, H100, L40s) available within your cluster, depending on the model you want to run. Usually this involves the installation of the &lt;a class="link" href="https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/install-nfd.html" target="_blank" rel="noopener"
+>NVIDIA Node Feature Discovery (NFD) Operator&lt;/a> and the &lt;a class="link" href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/" target="_blank" rel="noopener"
+>NVIDIA GPU operator&lt;/a> to make the GPU available to your pod.&lt;/p>
+&lt;h3 id="example-deploying-mistral-using-tgi-in-kubernetes">
+&lt;a href="#example-deploying-mistral-using-tgi-in-kubernetes">#&lt;/a>
+Example: Deploying Mistral using TGI in Kubernetes
+&lt;/h3>&lt;p>Running TGI on Kubernetes is pretty straightforward, once you&amp;rsquo;ve figured out the basic setup.
+To avoid downloading the model weights every time you restart the pod, create a PersistentVolumeClaim (PVC) to persist the model weights:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">PersistentVolumeClaim&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">hf-cache&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">accessModes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">ReadWriteMany&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">resources&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">requests&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">storage&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">50Gi&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">selector&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">matchLabels&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">pv&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">local&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">storageClassName&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c"># your storage class, if omitted, the default storage class will be used&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Now that you have created a PVC, you can create the deployment using the following deployment yaml. This deployment will download your model weights, then start the text generation inference servcer. In this example, it will run the &lt;code>mistralai/Mistral-7B-Instruct-v0.2&lt;/code> model:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;span class="lnt">52
+&lt;/span>&lt;span class="lnt">53
+&lt;/span>&lt;span class="lnt">54
+&lt;/span>&lt;span class="lnt">55
+&lt;/span>&lt;span class="lnt">56
+&lt;/span>&lt;span class="lnt">57
+&lt;/span>&lt;span class="lnt">58
+&lt;/span>&lt;span class="lnt">59
+&lt;/span>&lt;span class="lnt">60
+&lt;/span>&lt;span class="lnt">61
+&lt;/span>&lt;span class="lnt">62
+&lt;/span>&lt;span class="lnt">63
+&lt;/span>&lt;span class="lnt">64
+&lt;/span>&lt;span class="lnt">65
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">apps/v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Deployment&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">tgi-mistral&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">replicas&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">selector&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">matchLabels&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">app&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">tgi-mistral&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">template&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">labels&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">app&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">tgi-mistral&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">hub&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">persistentVolumeClaim&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">claimName&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">hf-cache&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">dshm&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">emptyDir&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">medium&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Memory&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">containers&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">model&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ghcr.io/huggingface/text-generation-inference:1.4.0&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">command&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;bash&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;-c&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">args&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">text-generation-server download-weights mistralai/Mistral-7B-Instruct-v0.2;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="l">text-generation-launcher --model-id mistralai/Mistral-7B-Instruct-v0.2 --port 8080&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">env&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">PORT&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">value&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s2">&amp;#34;8080&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">HF_HUB_CACHE&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">value&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/data&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">HF_HOME&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">value&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/data&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumeMounts&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">mountPath&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/dev/shm&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">dshm&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">mountPath&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/data&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">hub&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">resources&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">requests&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">cpu&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">1.0&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">memory&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">8Gi&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">nvidia.com/gpu&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">limits&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">cpu&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">5.0&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">memory&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">32Gi&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">nvidia.com/gpu&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">ports&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">containerPort&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">8080&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nn">---&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Service&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">tgi-mistral-service&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">labels&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">app&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">tgi-mistral-service&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">selector&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">app&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">tgi-mistral&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">type&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">NodePort&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">ports&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">protocol&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">TCP&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">port&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">8080&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Within your cluster, you can now reach the TGI service using the following curl command in another pod. Make sure to replace the &lt;code>deployment-namespace&lt;/code> with the name of the namespace you deployed TGI to:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">curl http://tgi-mistral.&amp;lt;deployment-namespace&amp;gt;.svc.cluster.local::8080/generate &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -X POST &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -d &lt;span class="s1">&amp;#39;{&amp;#34;inputs&amp;#34;:&amp;#34;What is Deep Learning?&amp;#34;,&amp;#34;parameters&amp;#34;:{&amp;#34;max_new_tokens&amp;#34;:20}}&amp;#39;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s1">&amp;#39;Content-Type: application/json&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>If you want to expose TGI to the public internet, you can create a Route (Openshift) or Ingress (Kubernetes).&lt;/p>
+&lt;p>Please make sure to adjust the timeout of your Route/Ingress if you have long running inference jobs. Larger models like Mixtral might run for more than 60s - which is the default timeout for Routes/Ingress - for large prompts wiht long contexts.&lt;/p>
+&lt;h2 id="further-information">
+&lt;a href="#further-information">#&lt;/a>
+Further information
+&lt;/h2>&lt;p>For those interested in diving deeper, please refer to the &lt;a class="link" href="https://github.com/huggingface/text-generation-inference" target="_blank" rel="noopener"
+>Hugginface TGI documentation&lt;/a> for CLI parameters, Python SDK, etc.&lt;/p></description></item><item><title>A simple FastAPI boilerplate for ML models</title><link>https://iamjanforster.de/p/fastapi-ml-skeleton/</link><pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/fastapi-ml-skeleton/</guid><description>&lt;h2 id="summary">
+&lt;a href="#summary">#&lt;/a>
+Summary
+&lt;/h2>&lt;p>I&amp;rsquo;ve created a GitHub repository named &amp;ldquo;fastapi-ml-skeleton&amp;rdquo; to simplify the deployment of machine learning models into production. Utilizing FastAPI, this project offers a robust framework for serving models securely and efficiently. The repository includes a tested example using a regression model for demonstrating house price predictions, targeting Python 3.11+ environments and employing Poetry for dependency management.&lt;/p>
+&lt;p>FastAPI creates a OpenAPI documention which you can directly use in Postman or generate code from for your client consuming this boilerplate code.
+&lt;img src="https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload.jpg"
+width="2100"
+height="1615"
+srcset="https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload_hu0f4f99d8bb23995de7ac4506bf940a6f_451721_480x0_resize_q75_box.jpg 480w, https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload_hu0f4f99d8bb23995de7ac4506bf940a6f_451721_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="OpenAPI spec created by FastAPI"
+class="gallery-image"
+data-flex-grow="130"
+data-flex-basis="312px"
+>&lt;/p>
+&lt;h2 id="highlights">
+&lt;a href="#highlights">#&lt;/a>
+Highlights
+&lt;/h2>&lt;ul>
+&lt;li>&lt;strong>FastAPI Framework&lt;/strong>: Ensures fast, secure, and easy deployment.&lt;/li>
+&lt;li>&lt;strong>Tested Sample Code&lt;/strong>: Includes a regression model to get you started quickly.&lt;/li>
+&lt;li>&lt;strong>Comprehensive Documentation&lt;/strong>: Guides on installation, setup, and API usage.&lt;/li>
+&lt;li>&lt;strong>Open Source&lt;/strong>: Available under the Apache-2.0 license.&lt;/li>
+&lt;/ul>
+&lt;h2 id="usage">
+&lt;a href="#usage">#&lt;/a>
+Usage
+&lt;/h2>&lt;p>To use this skeleton, clone the repository and follow the setup instructions provided. It covers everything from installation and running the local server to API authentication. This framework is designed to be scalable, allowing for easy expansion and integration of various machine learning models.&lt;/p>
+&lt;p>For more details, visit the &lt;a class="link" href="https://github.com/eightBEC/fastapi-ml-skeleton" target="_blank" rel="noopener"
+>GitHub repository&lt;/a>.&lt;/p>
+&lt;p>For feedback, issues and pull requests, please refer to the linked repository.&lt;/p></description></item><item><title>wkstools - A little helper for IBM Watson Natural Language Understanding with Watson Knowledge Studio</title><link>https://iamjanforster.de/p/wkstools/</link><pubDate>Sun, 09 Aug 2020 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/wkstools/</guid><description>&lt;h2 id="intro">
+&lt;a href="#intro">#&lt;/a>
+Intro
+&lt;/h2>&lt;p>Working with IBM Watson Knowledge Studio and IBM Natural Language Understanding (NLU) can be complicated, especially when relying on complex entity and relationship structures. Therefore, I created wkstools as a simple wrappe to work with the data provided by NLU.&lt;/p>
+&lt;p>wkstools is essentially a convenience library that bridges the gap between raw NLU outputs and actionable data insights. Its primary function is to provide a set of utilities that make it easier to parse, interpret, and utilize entities and relations generated by IBM Watson NLU, aiming to reduce the overhead involved in manually sifting through JSON data.&lt;/p>
+&lt;h2 id="usage">
+&lt;a href="#usage">#&lt;/a>
+Usage
+&lt;/h2>&lt;p>Getting started with wkstools is straightforward. The library requires Python 3.6+ and Pydantic, ensuring a wide compatibility range. Installation is a breeze via pip, and the documentation provides clear examples of how to parse entities and relations from NLU JSON responses. This practical approach allows developers to quickly integrate wkstools into their projects, focusing more on leveraging NLU insights and less on data preprocessing.&lt;/p>
+&lt;h3 id="installation">
+&lt;a href="#installation">#&lt;/a>
+Installation
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">$ pip install wkstools
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="example-parse-entities-and-relations">
+&lt;a href="#example-parse-entities-and-relations">#&lt;/a>
+Example: Parse entities and relations
+&lt;/h3>&lt;p>To parse the NLU JSON response retrieved from IBM Natural Language Understanding, use:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">wkstools&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Your NLU JSON response to process&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">nlu_response&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;{..., &amp;#34;relations&amp;#34;: [{&amp;#34;type&amp;#34;: &amp;#34;specifiesValue&amp;#34;, ...], &amp;#34;entities&amp;#34;: [...]}&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">entities&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">wkstools&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">parse_entities&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nlu_response&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">relations&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">wkstools&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">parse_relations&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nlu_response&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>See the entity and relation models for available fields.&lt;/p>
+&lt;h3 id="example-access-specfic-relations">
+&lt;a href="#example-access-specfic-relations">#&lt;/a>
+Example: Access specfic relations
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">wkstools&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Your NLU JSON response to process&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">nlu_response&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;{..., &amp;#34;relations&amp;#34;: [{&amp;#34;type&amp;#34;: &amp;#34;specifiesValue&amp;#34;, ...], &amp;#34;entities&amp;#34;: [...]}&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">relations&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">wkstools&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">parse_relations&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nlu_response&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">value_relations&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">wkstools&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get_relations_by_type&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">relations&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;specifiesValue&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="further-information">
+&lt;a href="#further-information">#&lt;/a>
+Further information
+&lt;/h2>&lt;p>For those interested in diving deeper or integrating wkstools into their own projects, my &lt;a class="link" href="https://github.com/eightBEC/wkstools" target="_blank" rel="noopener"
+>GitHub repository&lt;/a> offers comprehensive guidance, from installation instructions to detailed usage examples. You can explore the repository, contribute, or simply learn more about how wkstools can enhance your NLU projects by visiting wkstools on &lt;a class="link" href="https://github.com/eightBEC/wkstools" target="_blank" rel="noopener"
+>GitHub&lt;/a>.&lt;/p></description></item><item><title>NLP in Practice</title><link>https://iamjanforster.de/p/wks-type-systems-mural/</link><pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/wks-type-systems-mural/</guid><description>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/relation.webp" alt="Featured image of post NLP in Practice" />&lt;p>Co-Authored by Christina Niegel and Jan Forster&lt;/p>
+&lt;p>One of the IBM Watson services that allow a very deep understanding of complex natural language is &lt;a class="link" href="https://www.ibm.com/cloud/watson-knowledge-studio" target="_blank" rel="noopener"
+>Watson Knowledge Studio&lt;/a> (WKS). It helps users to design and develop Machine Learning annotators trained on understanding a domain language, not only regarding specific terminology but also underlying related information. Accessing not only strings and keywords, but context-sensitive information can unlock the semantic meaning of terms and phrases and helps to concentrate on what&amp;rsquo;s relevant for the goal of the NLP application.&lt;/p>
+&lt;hr>
+&lt;h2 id="a-type-system">
+&lt;a href="#a-type-system">#&lt;/a>
+A Type System?
+&lt;/h2>&lt;p>A Type System is the abstract representation of information that is relevant within the domain and will be the guideline for the &amp;ldquo;human annotators&amp;rdquo;. They are going to train the system and help WKS to learn what to do with text.&lt;/p>
+&lt;p>For all those who already developed annotators with WKS, it&amp;rsquo;s nothing new when we say: a well-designed Type System can decide about the success or fail of your WKS project. Creating a Type System is often a challenging task and underestimating it can turn out in non-scalable solutions and unsatisfied users of the end product.&lt;/p>
+&lt;p>Unfortunately, contrary to common beliefs, we have to admit that there is no recipe for a universal Type System — sorry. The number of different Type Systems varies as much as there are business problems and domain languages. But even if there&amp;rsquo;s not a single solution that solves every problem, we&amp;rsquo;d like to share our approach that can ease the process of building a feasible Type System.&lt;/p>
+&lt;h2 id="use-case-example">
+&lt;a href="#use-case-example">#&lt;/a>
+Use Case Example
+&lt;/h2>&lt;p>Imagine yourself being in a situation where your client, a large smartphone retailer, wants to allow his customers to find smartphones with their natural language using a chatbot. People might ask the following questions to find a suitable smartphone:&lt;/p>
+&lt;p>&amp;ldquo;Which iPhone can I get for less than 500 dollars?&amp;rdquo;
+&amp;ldquo;Which phone has more than 4GB of RAM?&amp;rdquo;
+&amp;ldquo;How many pixels does the Pixel have?&amp;rdquo;&lt;/p>
+&lt;p>Your client needs to extract the relevant information from the customers&amp;rsquo; questions to provide only smartphone suggestions that meet their criteria.&lt;/p>
+&lt;h2 id="goals-of-this-blog-entry">
+&lt;a href="#goals-of-this-blog-entry">#&lt;/a>
+Goals of this Blog Entry
+&lt;/h2>&lt;p>Given this use case, we want to share our experiences of the domain adaptation process:&lt;/p>
+&lt;p>Share our method to build a robust Type System that is focused on the business requirements and outcome. Questions to ask yourself: What are the entities and relations I need to recognize and extract to achieve the business goal?
+Support you in abstracting away from a specific example towards a scalable Type System design process.
+Underline the importance of the mantra: &amp;ldquo;Consistency is key&amp;rdquo;.&lt;/p>
+&lt;hr>
+&lt;h2 id="wks-terminology">
+&lt;a href="#wks-terminology">#&lt;/a>
+WKS Terminology
+&lt;/h2>&lt;p>Before we get started, let&amp;rsquo;s make sure we are using the same terms in the form of a &amp;ldquo;mini glossary&amp;rdquo;. More info can be found in the official WKS documentation.&lt;/p>
+&lt;h3 id="type-system">
+&lt;a href="#type-system">#&lt;/a>
+Type System
+&lt;/h3>&lt;p>The Type System defines elements you want to label using annotations. It defines how content can be annotated using entities and relations.&lt;/p>
+&lt;h3 id="mention">
+&lt;a href="#mention">#&lt;/a>
+Mention
+&lt;/h3>&lt;p>A mention is a span of text that you consider relevant in your text.&lt;/p>
+&lt;h3 id="entity-type">
+&lt;a href="#entity-type">#&lt;/a>
+Entity Type
+&lt;/h3>&lt;p>An Entity Type is a category you want to be able to recognize in your text to solve your business problem. A mention in the text that belongs to a particular Entity Type is called Entity Mention.&lt;/p>
+&lt;h3 id="entity-subtype">
+&lt;a href="#entity-subtype">#&lt;/a>
+Entity Subtype
+&lt;/h3>&lt;p>Entity Subtypes allow the further refinement of Entity Types.&lt;/p>
+&lt;h3 id="relation-type">
+&lt;a href="#relation-type">#&lt;/a>
+Relation Type
+&lt;/h3>&lt;p>A Relation Type defines a directed relationship between two entities within a single sentence.&lt;/p>
+&lt;h2 id="what-is-mural">
+&lt;a href="#what-is-mural">#&lt;/a>
+What is MURAL?
+&lt;/h2>&lt;p>No, we&amp;rsquo;re not traveling back in time to the Stone Age. MURAL is an online collaboration whiteboard platform. When we met in client engagement in 2018 after working on various NLP projects involving Watson Knowledge Studio and Watson Discovery Service, we came up with the idea to try out MURAL for our domain adaptation process. We both liked using it for Design Thinking sessions before, so we gave it a try.&lt;/p>
+&lt;h2 id="the-flow">
+&lt;a href="#the-flow">#&lt;/a>
+The Flow
+&lt;/h2>&lt;h3 id="corpus-studies">
+&lt;a href="#corpus-studies">#&lt;/a>
+Corpus Studies
+&lt;/h3>&lt;p>Before you define entities or relations, you should always read through the domain corpus and other existing language artifacts while having the business problem in mind. This takes time and is a tedious task, but it is necessary. Free your mind from any &amp;ldquo;common&amp;rdquo; Entity Types that you might have already in mind just because you know that domain. This can be misleading and brings a bias to your Type System right from the beginning.&lt;/p>
+&lt;h3 id="mention-collection">
+&lt;a href="#mention-collection">#&lt;/a>
+Mention Collection
+&lt;/h3>&lt;p>Post the relevant mentions that occur during your &amp;ldquo;corpus studies&amp;rdquo; to your MURAL board.&lt;/p>
+&lt;p>In our example, this could be terms and phrases collected from end-users that want to find a new smartphone.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/wks-mention-collection.webp"
+width="1400"
+height="1242"
+srcset="https://iamjanforster.de/p/wks-type-systems-mural/wks-mention-collection_huf810d54aac0c825c7411b999c014d5eb_44046_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/wks-type-systems-mural/wks-mention-collection_huf810d54aac0c825c7411b999c014d5eb_44046_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="An overview of mentions in domain."
+class="gallery-image"
+data-flex-grow="112"
+data-flex-basis="270px"
+>&lt;/p>
+&lt;h3 id="entity-type-definition">
+&lt;a href="#entity-type-definition">#&lt;/a>
+Entity Type Definition
+&lt;/h3>&lt;p>When you have covered a representative set of mentions on your board, start to cluster and align the mentions: try to give those clusters names. These would be the Entity Type names.&lt;/p>
+&lt;p>Referring to our initial example user question &amp;ldquo;Which iPhone can I get for less than 500 dollars?&amp;rdquo; you can see the relevant Entity Type clusters in our Type System.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/wks-entity-type-definition.webp"
+width="1400"
+height="1209"
+srcset="https://iamjanforster.de/p/wks-type-systems-mural/wks-entity-type-definition_hufc95bf300d20f951324943db36488836_34760_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/wks-type-systems-mural/wks-entity-type-definition_hufc95bf300d20f951324943db36488836_34760_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="An overview of entity types of a domain."
+class="gallery-image"
+data-flex-grow="115"
+data-flex-basis="277px"
+>&lt;/p>
+&lt;h3 id="relation-type-definition">
+&lt;a href="#relation-type-definition">#&lt;/a>
+Relation Type Definition
+&lt;/h3>&lt;p>Sketch possible relations between the entity clusters. Here it is important to keep the business goal and the value of the product in mind. The more complex your Type System gets, the more difficult it will be to train and maintain. You don&amp;rsquo;t need to build a domain ontology. Focus on relations that help to solve your business problem.&lt;/p>
+&lt;p>In the image below you can see the possible relations between the relevant entities we defined for our use case.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/relation-type-defintion.webp"
+width="2000"
+height="1409"
+srcset="https://iamjanforster.de/p/wks-type-systems-mural/relation-type-defintion_hu5ea73d9a36fbae08ab1b01fd48b48ae2_55394_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/wks-type-systems-mural/relation-type-defintion_hu5ea73d9a36fbae08ab1b01fd48b48ae2_55394_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="An overview of relations of different entity types within a domain"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="340px"
+>&lt;/p>
+&lt;h3 id="transfer-to-wks">
+&lt;a href="#transfer-to-wks">#&lt;/a>
+Transfer to WKS
+&lt;/h3>&lt;p>When you are ready, transfer the Entity Types and Relation Types into WKS and start annotating some documents. It&amp;rsquo;s completely OK if you run into problems regarding ambiguous mentions, unclear lengths of spans (multi-token Entity Mentions) or missing relations in the first iteration. Usually, you refine your Type System and go through the above steps again.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/entity-annotations.webp"
+width="2000"
+height="561"
+srcset="https://iamjanforster.de/p/wks-type-systems-mural/entity-annotations_hu8fded45e5ad301a27d50da15044b6704_29556_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/wks-type-systems-mural/entity-annotations_hu8fded45e5ad301a27d50da15044b6704_29556_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Mention view in Watson Knowledge Studio"
+class="gallery-image"
+data-flex-grow="356"
+data-flex-basis="855px"
+>&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/relations.webp"
+width="2000"
+height="464"
+srcset="https://iamjanforster.de/p/wks-type-systems-mural/relations_hub3cb8c30bdc3b4f4127e6130a57d3618_28972_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/wks-type-systems-mural/relations_hub3cb8c30bdc3b4f4127e6130a57d3618_28972_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Relation view in Watson Knowledge Studio"
+class="gallery-image"
+data-flex-grow="431"
+data-flex-basis="1034px"
+>&lt;/p>
+&lt;h3 id="cheat-sheet">
+&lt;a href="#cheat-sheet">#&lt;/a>
+Cheat Sheet
+&lt;/h3>&lt;p>Critical mentions, that might be confusing for the team of human annotators, can be collected on a separate MURAL mention board. This board serves as a cheat sheet. It&amp;rsquo;s also a great way to collaborate and document changes and extensions to your Type System. It will save time when syncing, it is easier to lookup than checking dictionaries in WKS or Excel and ensures consistency within your team and your annotations. Avoid duplicates or overlapping Entity Mentions across Entity Type clusters.&lt;/p>
+&lt;p>&lt;strong>Pro Tip 😉&lt;/strong>
+You can use icons in MURAL to highlight difficult or ambiguous examples that human annotators need to know about.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/wks-type-systems-mural/wks-mural-cheat-sheet.webp"
+width="2000"
+height="1413"
+srcset="https://iamjanforster.de/p/wks-type-systems-mural/wks-mural-cheat-sheet_hu1597d81a2c0dbdafcba6de4194a9519e_77952_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/wks-type-systems-mural/wks-mural-cheat-sheet_hu1597d81a2c0dbdafcba6de4194a9519e_77952_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="A cheat sheet for mentions of entity types"
+class="gallery-image"
+data-flex-grow="141"
+data-flex-basis="339px"
+>&lt;/p>
+&lt;h2 id="thats-it">
+&lt;a href="#thats-it">#&lt;/a>
+That&amp;rsquo;s it
+&lt;/h2>&lt;p>We hope you enjoyed this kind of hands-on session creating a WKS Type System and hope it was fun to follow the use case.&lt;/p>
+&lt;p>If you want to build your own Type System in WKS, get started on the IBM Cloud for free today!&lt;/p>
+&lt;h2 id="about-us">
+&lt;a href="#about-us">#&lt;/a>
+About Us
+&lt;/h2>&lt;p>Christina Niegel and Jan Forster are NLP practitioners in the IBM Watson team in Europe. We help our clients to use the full potential of our Watson products and solutions.&lt;/p>
+&lt;p>We hope this content was helpful to you! Please provide feedback in the comments below. If you have any questions, let us know, we&amp;rsquo;re happy to help.&lt;/p></description></item><item><title>Reinforcement Learning</title><link>https://iamjanforster.de/p/reinforcement-learning-policies/</link><pubDate>Mon, 13 Nov 2017 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/reinforcement-learning-policies/</guid><description>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/cover.jpg" alt="Featured image of post Reinforcement Learning" />&lt;p>In my last post, I wrote about µniverse, a great framework for training game agents using Reinforcement Learning. After training a lot of agents and playing around with µniverse, I found out that training my agent on the game StackTower is not working as good as for other games like e.g. Doodle Jump.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/human-gameplay.gif"
+width="320"
+height="480"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/human-gameplay_hucb0b755f4cfbd1f75f9a7d262cd2543c_818483_480x0_resize_box_1.gif 480w, https://iamjanforster.de/p/reinforcement-learning-policies/human-gameplay_hucb0b755f4cfbd1f75f9a7d262cd2543c_818483_1024x0_resize_box_1.gif 1024w"
+loading="lazy"
+alt="Me playing StackTower - trying hard"
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="160px"
+>&lt;/p>
+&lt;p>The goal of StackTower is to stack as many blocks as possible on the platform. Each block fades in from east → west or north → south. Once the block reaches a good position, one can drop it by pressing a key. On the left you see me playing the game. I had luck with my first block, but the consecutive blocks were badly positioned.&lt;/p>
+&lt;p>Before we dive into the issue, the agent is facing in this game, let&amp;rsquo;s have a quick recap of Reinforcement Learning.&lt;/p>
+&lt;hr>
+&lt;p>Reinforcement Learning consists of five basic concepts:&lt;/p>
+&lt;ol>
+&lt;li>The &lt;strong>Agent&lt;/strong>, our actor who is looking to maximize its reward for actions in a given environment.&lt;/li>
+&lt;li>An &lt;strong>Environment&lt;/strong>, which serves as a place for our actor to act in and discover, e.g. a game like Super Mario.&lt;/li>
+&lt;li>A &lt;strong>State&lt;/strong>, that describes the current status of the environment.&lt;/li>
+&lt;li>&lt;strong>Actions&lt;/strong>, which can be performed by the agent to change the state in an environment, like jumping to get a coin in Super Mario.&lt;/li>
+&lt;li>The &lt;strong>Reward&lt;/strong>, that could be earned by performing a certain action in a given state.&lt;/li>
+&lt;/ol>
+&lt;hr>
+&lt;p>Applied to StackTower we can see that the reward for this game is quite tricky. As humans, we intuitively know that the (long-term) reward is somehow related to our timing. The better the timing, the bigger the part of the block that remains on the platform. But this information is reflected nowhere in the game score. Whether the whole block is placed on the platform or just a part of it, the score will always be increased by one. Our agent might be able to learn this relationship, but it will take a lot of game episodes to do so.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/rl-env-action-agent-state-reward.webp"
+width="450"
+height="435"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/rl-env-action-agent-state-reward_hubd2e0f7ea041ca0cedfc562bbe114633_14896_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-policies/rl-env-action-agent-state-reward_hubd2e0f7ea041ca0cedfc562bbe114633_14896_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Source: Wikimedia.com, License: CC0 1.0"
+class="gallery-image"
+data-flex-grow="103"
+data-flex-basis="248px"
+>&lt;/p>
+&lt;hr>
+&lt;p>I&amp;rsquo;ve analyzed the reward as a function of episodes for StackTower as it can be seen in the following plot. For the episodes that were played by the agent without any bootstrapping (the ones left to the black line), we can see that the reward curve stays pretty flat. Especially when assuming this growth rate for the following episodes, we could expect an average reward of 6 per episode after playing 2000 episodes (orange line). Which means that the agent is able to stack up 6 blocks on top of each other after learning from 2000 episodes.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/rl-bootstrapping-results.webp"
+width="627"
+height="598"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/rl-bootstrapping-results_hu852b73dadc298991b6ecb147f391ec3a_24612_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-policies/rl-bootstrapping-results_hu852b73dadc298991b6ecb147f391ec3a_24612_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Episode Reward for Agent 1 (with and without bootstrapping)"
+class="gallery-image"
+data-flex-grow="104"
+data-flex-basis="251px"
+>&lt;/p>
+&lt;hr>
+&lt;p>On my machine this would take roughly 48 hours, so I wanted to speed up the whole process by supporting the agent. Therefore I&amp;rsquo;ve been using @unixpickle&amp;rsquo;s Demoverse to record my gameplay. The best score I was able to achieve on my machine, was 12 stacked blocks (red line in the plot). The average stack size was around 9. So I took 10 game recordings and used them to train the agent&amp;rsquo;s policy on those. As we can see in the above chart, the agent started to rapidly increase its average reward after updating the policy (the curve right to the black line).&lt;/p>
+&lt;p>And this is the agent playing StackTower after training on 2000 episodes, using bootstrapping after episode 800.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/rl-system-gameplay.gif"
+width="230"
+height="345"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/rl-system-gameplay_hufc86a0d714d6c93296c8f13dac8a4c78_8095268_480x0_resize_box_1.gif 480w, https://iamjanforster.de/p/reinforcement-learning-policies/rl-system-gameplay_hufc86a0d714d6c93296c8f13dac8a4c78_8095268_1024x0_resize_box_1.gif 1024w"
+loading="lazy"
+alt="The agent playing StackTower — way better than I&amp;rsquo;m able to."
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="160px"
+>&lt;/p>
+&lt;hr>
+&lt;p>If you enjoyed this post, please let me know. Follow me on &lt;a class="link" href="https://medium.com/@8B_EC" target="_blank" rel="noopener"
+>Medium&lt;/a> for the latest updates or just to say hi.&lt;/p></description></item><item><title>A quick look into µniverse</title><link>https://iamjanforster.de/p/reinforcement-learning-universe/</link><pubDate>Sun, 05 Nov 2017 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/reinforcement-learning-universe/</guid><description>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/cover.jpg" alt="Featured image of post A quick look into µniverse" />&lt;p>After working a couple of weeks with OpenAI&amp;rsquo;s Gym and Universe I&amp;rsquo;m still very excited to discover and learn all possibilities to train RL agents using those frameworks.&lt;/p>
+&lt;p>Unfortunately, it seems that there isn&amp;rsquo;t a huge community actively using Universe. I don&amp;rsquo;t know whether that&amp;rsquo;s related to the specific topic of RL or the challenges that come up when working with Universe due to its specific architecture as mentioned e.g. by Alex Nichol:&lt;/p>
+&lt;blockquote>
+&lt;p>… the biggest problem with Universe is that VNC and Flash need to run in real time. This means that any hiccups on your training machine […] might suddenly change the frame rate at which your AI experiences its virtual environment.&lt;/p>
+&lt;/blockquote>
+&lt;p>Therefore I was looking out for solutions to performance issues I faced when running more complex environments in Universe and came across µniverse. µniverse is developed by Alex Nichol aka unixpickle and providing environments to train RL agents for HTML5 games, which should improve the overall performance and complexity as RL agent training &amp;amp; development framework.&lt;/p>
+&lt;h2 id="installation">
+&lt;a href="#installation">#&lt;/a>
+Installation
+&lt;/h2>&lt;p>The installation of µniverse is pretty straightforward and documented on the µniverse Github page.
+Unixpickle also developed a µniverse-agent which provides ready-to-use agents based on popular concepts like PPO, TRPO, A3C.
+Available parameters can be shown by typing the following commands:&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent.webp"
+width="460"
+height="118"
+srcset="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent_hufff94c5ce872b8c4f5d30a78a9553f77_11732_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent_hufff94c5ce872b8c4f5d30a78a9553f77_11732_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Choosing different agents for µniverse"
+class="gallery-image"
+data-flex-grow="389"
+data-flex-basis="935px"
+>&lt;/p>
+&lt;p>Algorithm-specific parameters can be found by typing:&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent-models.webp"
+width="540"
+height="436"
+srcset="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent-models_hu83dde9516e0255b2985944b93f863551_34654_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent-models_hu83dde9516e0255b2985944b93f863551_34654_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Options for the µniverse A3C agent"
+class="gallery-image"
+data-flex-grow="123"
+data-flex-basis="297px"
+>&lt;/p>
+&lt;h2 id="training-an-agent">
+&lt;a href="#training-an-agent">#&lt;/a>
+Training an Agent
+&lt;/h2>&lt;p>I&amp;rsquo;ve chosen Doodle Jump as the first game to train A3C agents on, but you can choose from all games provided by µniverse. They can be found in the µniverse games folder. The naming is somehow similar to the naming conventions used in OpenAI&amp;rsquo;s Gym.
+To start the training process, the following command can be used:&lt;/p>
+&lt;p>muniverse-agent a3c -env DoodleJump-v0 -out doodlejump &amp;raquo; log_doodle.txt 2&amp;gt;&amp;amp;1
+The first and second parameters are pretty self-explanatory.&lt;/p>
+&lt;p>The out parameter provides a name where the trained policy is stored to and can be loaded from to continue training.&lt;/p>
+&lt;p>At the end of the command &amp;raquo; log_doodle.text 2&amp;gt;&amp;amp;1 is forwarding the output of the µniverse-agent to a log file we&amp;rsquo;ll use for performance analysis in a next article.&lt;/p>
+&lt;h2 id="observing-the-agent">
+&lt;a href="#observing-the-agent">#&lt;/a>
+Observing the Agent
+&lt;/h2>&lt;p>While the training is running you might have taken a look into the muniverse-agent&amp;rsquo;s folder to search for some kind of visualization of the agent&amp;rsquo;s current state. One way to get an understanding of the agent&amp;rsquo;s performance is to take a look at the log file created in the previous step. Another way is to visualize the agent&amp;rsquo;s interactions with the environment. In our case the Doodle Jump gameplay.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/doodle.gif"
+width="320"
+height="480"
+srcset="https://iamjanforster.de/p/reinforcement-learning-universe/doodle_hu3e6fd1e3da7a2932c0311594a6aa89b4_1997167_480x0_resize_box_1.gif 480w, https://iamjanforster.de/p/reinforcement-learning-universe/doodle_hu3e6fd1e3da7a2932c0311594a6aa89b4_1997167_1024x0_resize_box_1.gif 1024w"
+loading="lazy"
+alt="Agent playing Doodle Jump"
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="160px"
+>
+This can simply be done by stopping the training and adding the flag -record &amp;lt;PATH_TO_RECORDING_FOLDER&amp;gt;. Restarting the agent will create a couple hundred images containing &amp;ldquo;screenshots&amp;rdquo; of the agent&amp;rsquo;s game play.&lt;/p>
+&lt;h2 id="next-steps">
+&lt;a href="#next-steps">#&lt;/a>
+Next Steps
+&lt;/h2>&lt;p>In the next article I will show you an easy way to visualize the agent&amp;rsquo;s performance based on the logs we&amp;rsquo;ve created in this little tutorial. I&amp;rsquo;m really looking forward to see what kind of frameworks unixpickle, OpenAI and other companies will work on in the future.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/human-gameplay.gif"
+loading="lazy"
+alt="Me playing StackTower - trying hard"
+>&lt;/p>
+&lt;hr>
+&lt;p>If you enjoyed this post, please let me know. Follow me on &lt;a class="link" href="https://medium.com/@8B_EC" target="_blank" rel="noopener"
+>Medium&lt;/a> for the latest updates or just to say hi.&lt;/p></description></item><item><title>How to setup OpenAI Universe in Windows using Docker</title><link>https://iamjanforster.de/p/openai-universe/</link><pubDate>Sun, 15 Oct 2017 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/openai-universe/</guid><description>&lt;img src="https://iamjanforster.de/p/openai-universe/cover.jpg" alt="Featured image of post How to setup OpenAI Universe in Windows using Docker" />&lt;p>When I first heard about OpenAI Universe, I wanted to start playing around with it as quickly as possible. Universe was released as&lt;/p>
+&lt;blockquote>
+&lt;p>…, a software platform for measuring and training an AI&amp;rsquo;s general intelligence across the world&amp;rsquo;s supply of games, websites and other applications.&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/agent-interaction.webp"
+width="1400"
+height="402"
+srcset="https://iamjanforster.de/p/openai-universe/agent-interaction_hu6478cb8b0193693d1df2169172d5f784_14346_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/agent-interaction_hu6478cb8b0193693d1df2169172d5f784_14346_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Agent Interaction - Source: https://blog.openai.com/universe/"
+class="gallery-image"
+data-flex-grow="348"
+data-flex-basis="835px"
+>&lt;/p>
+&lt;p>But soon I had to realize that Windows isn&amp;rsquo;t probably the best OS to use as a starting point as it is currently not supported by OpenAI Universe. So my first naive idea was to setup up an Ubuntu VM and get the Universe Starter Agent going. Although my machine had a new i7 and 32 GB of memory the results were disappointing — even if I only ran 4 agents.&lt;/p>
+&lt;p>I&amp;rsquo;ve never managed to reduce the reaction time to less than 60 ms in the Pong environment.&lt;/p>
+&lt;p>So a guest Ubuntu wasn&amp;rsquo;t the way to go. Buying a new SSD and installing Ubuntu would have taken too much time and AWS EC2 wasn&amp;rsquo;t an alternative, so I decided to try out Docker.&lt;/p>
+&lt;h2 id="setup">
+&lt;a href="#setup">#&lt;/a>
+Setup
+&lt;/h2>&lt;p>So I followed the instructions on the OpenAI Universe Github page:
+To get started, open a Docker Quickstart Terminal as Admin and clone the universe repo:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">git clone https://github.com/openai/universe.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> universe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Build a docker image, tag it as &amp;lsquo;universe&amp;rsquo;:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker build -t universe .
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>If the error &amp;ldquo;Error response from daemon: client is newer than server (client API version: 1.24, server API version: 1.23)&amp;rdquo;. pops up, you may have to run the following command to circumvent an issue due to an older Docker Toolbox Installation on Windows 7:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">DOCKER_API_VERSION&lt;/span>&lt;span class="o">=&lt;/span>1.23
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>The next step is to start a container from universe image. The -p switches are used to redirect the ports of Tensorboard and the VNC outputs to access them from your Windows machine later on.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker run --privileged --rm -it -p 12345:12345 -p 5900:5900 -e &lt;span class="nv">DOCKER_NET_HOST&lt;/span>&lt;span class="o">=&lt;/span>172.17.0.1 universe /bin/bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Because of the -it switch and the /bin/bash command you should find yourself in a pseudo tty pointing to the directory /usr/locasl/universe&lt;/p>
+&lt;p>A prerequisite for installing the universe-starter-agent is Miniconda.&lt;/p>
+&lt;p>Download the latest installer using wget in your container:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sh" data-lang="sh">&lt;span class="line">&lt;span class="cl">wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Start the installation typing:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">bash ./Miniconda3-latest-Linux-x86_64.sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>and confirm the prompts.&lt;/p>
+&lt;p>Once Miniconda is installed, follow the installation instructions given on [https://github.com/openai/universe-starter-agent]&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">conda create --name universe-starter-agent &lt;span class="nv">python&lt;/span>&lt;span class="o">=&lt;/span>3.5
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">source&lt;/span> /root/minconda3/bin/activate universe-starter-agent
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">apt-get install -y tmux htop cmake golang libjpeg-dev
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install “gym&lt;span class="o">[&lt;/span>atari&lt;span class="o">]&lt;/span>”
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install universe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install six
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install tensorflow
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">conda install -y -c https://conda.binstar.org/menpo opencv3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">conda install -y numpy
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">conda install -y scipy
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Now you have everything installed to start using the universe-starter-agent. It&amp;rsquo;s a good time to commit the changes to your universe docker image.&lt;/p>
+&lt;p>Run docker ps to get the container id, then run&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker commit &amp;lt;CONTAINER_ID&amp;gt; universe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="test-run">
+&lt;a href="#test-run">#&lt;/a>
+Test Run
+&lt;/h2>&lt;p>Make sure you&amp;rsquo;re in the universe-starter-agent folder and in the correct conda environment by running the following command in your container bash:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> universe-starter-agent &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nb">source&lt;/span> /root/miniconda3/bin/activate universe-starter-agent
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Start Pacman to see if everything is working correctly by running:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">python train.py — num-workers &lt;span class="m">2&lt;/span> — env-id gym-core.MsPacman-v0 — log-dir /tmp/pacman
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Now you should see a similar output on your screen:
+&lt;img src="https://iamjanforster.de/p/openai-universe/pacman-session.webp"
+width="1397"
+height="523"
+srcset="https://iamjanforster.de/p/openai-universe/pacman-session_hua777ea83c5bf17be052bf6ba68a3a453_69988_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/pacman-session_hua777ea83c5bf17be052bf6ba68a3a453_69988_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Pacman session with 2 workers starting in container"
+class="gallery-image"
+data-flex-grow="267"
+data-flex-basis="641px"
+>&lt;/p>
+&lt;p>You can now issue the command tmux a to browse through the different sessions that were started to make sure the workers are running correctly. When starting the workers for the first time, they&amp;rsquo;ll pull a container with all the necessary tools needed, which might take a couple of minutes.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/tmux-screen.webp"
+width="1009"
+height="447"
+srcset="https://iamjanforster.de/p/openai-universe/tmux-screen_hu9bdac633c1703438fe32b3f1ea56dba6_65744_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/tmux-screen_hu9bdac633c1703438fe32b3f1ea56dba6_65744_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="tmux screen"
+class="gallery-image"
+data-flex-grow="225"
+data-flex-basis="541px"
+>&lt;/p>
+&lt;p>In tmux you can change between the different processes (workers, tensorboard, orchestrator and htop) by entering &lt;code>CTRL+b [0–4]&lt;/code>. Return to bash by pressing &lt;code>CTRL+b d&lt;/code>.&lt;/p>
+&lt;h2 id="watching-your-agents-play">
+&lt;a href="#watching-your-agents-play">#&lt;/a>
+Watching your Agents Play
+&lt;/h2>&lt;p>If the workers are running correctly and your agents start training, you can view the details in Tensorboard from your Windows machine&amp;rsquo;s browser. The only thing you need is the IP your Docker is running with. You can see the default machine&amp;rsquo;s IP when starting a new Docker Quickstart Terminal:&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/docker.webp"
+width="832"
+height="323"
+srcset="https://iamjanforster.de/p/openai-universe/docker_hu59222453ab13af77e6335817e10ebc61_14852_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/docker_hu59222453ab13af77e6335817e10ebc61_14852_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Docker Quickstart Terminal startup screen for default machine on Windows 7"
+class="gallery-image"
+data-flex-grow="257"
+data-flex-basis="618px"
+>&lt;/p>
+&lt;p>Just enter &lt;code>&amp;lt;YOUR_DOCKER_IP&amp;gt;:12345&lt;/code> and Tensorboard should open up.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/tensorboard.jpg"
+width="1896"
+height="896"
+srcset="https://iamjanforster.de/p/openai-universe/tensorboard_huf0f94727527e7e470168c5bbabb04c03_284273_480x0_resize_q75_box.jpg 480w, https://iamjanforster.de/p/openai-universe/tensorboard_huf0f94727527e7e470168c5bbabb04c03_284273_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Tensorboard"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+>&lt;/p>
+&lt;p>To view the agents playing, use the VNC viewer of your choice and connect it to one of the VNC ports. You can get ports by running docker ps in your Docker Terminal. This returns a list of your primary container and the child containers with your workers. Each worker routes its VNC port 5900 to a free port e.g. 5901 as shown in the figure below.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/vnc-workers.webp"
+width="1399"
+height="169"
+srcset="https://iamjanforster.de/p/openai-universe/vnc-workers_hu8c35194e03eee92d643dea7090955f57_28178_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/vnc-workers_hu8c35194e03eee92d643dea7090955f57_28178_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Worker VNC ports (yellow)"
+class="gallery-image"
+data-flex-grow="827"
+data-flex-basis="1986px"
+>
+When connecting to a VNC output, enter openai as password and you should see the agent playing.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/worker-playing-pacman.webp"
+width="638"
+height="266"
+srcset="https://iamjanforster.de/p/openai-universe/worker-playing-pacman_hu635aa644c2d0ee49d89171f22b602fc6_10222_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/worker-playing-pacman_hu635aa644c2d0ee49d89171f22b602fc6_10222_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Worker 1 playing Pacman"
+class="gallery-image"
+data-flex-grow="239"
+data-flex-basis="575px"
+>
+Entering tmux kill-session will stop your workers. If you want to reuse your models in a next training session, think of mounting your Windows filesystem to docker to transfer the log-dir contents to your local machine.&lt;/p>
+&lt;hr>
+&lt;p>I hope my little how-to supported you to get OpenAI universe running on your Windows machine.&lt;/p>
+&lt;p>If you enjoyed this post, please let me know. Follow me on &lt;a class="link" href="https://medium.com/@8B_EC" target="_blank" rel="noopener"
+>Medium&lt;/a> for the latest updates or just to say hi.&lt;/p>
+&lt;blockquote>
+&lt;p>Image source: &lt;a class="link" href="Image" >https://www.flickr.com/photos/textfiles/27228418683/&lt;/a> licensed under the Creative Commons Attribution 2.0 Generic&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

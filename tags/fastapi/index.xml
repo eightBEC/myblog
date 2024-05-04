@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>FastAPI on Jan's Blog</title><link>https://iamjanforster.de/tags/fastapi/</link><description>Recent content in FastAPI on Jan's Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 10 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://iamjanforster.de/tags/fastapi/index.xml" rel="self" type="application/rss+xml"/><item><title>A simple FastAPI boilerplate for ML models</title><link>https://iamjanforster.de/p/fastapi-ml-skeleton/</link><pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/fastapi-ml-skeleton/</guid><description>&lt;h2 id="summary">
+&lt;a href="#summary">#&lt;/a>
+Summary
+&lt;/h2>&lt;p>I&amp;rsquo;ve created a GitHub repository named &amp;ldquo;fastapi-ml-skeleton&amp;rdquo; to simplify the deployment of machine learning models into production. Utilizing FastAPI, this project offers a robust framework for serving models securely and efficiently. The repository includes a tested example using a regression model for demonstrating house price predictions, targeting Python 3.11+ environments and employing Poetry for dependency management.&lt;/p>
+&lt;p>FastAPI creates a OpenAPI documention which you can directly use in Postman or generate code from for your client consuming this boilerplate code.
+&lt;img src="https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload.jpg"
+width="2100"
+height="1615"
+srcset="https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload_hu0f4f99d8bb23995de7ac4506bf940a6f_451721_480x0_resize_q75_box.jpg 480w, https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload_hu0f4f99d8bb23995de7ac4506bf940a6f_451721_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="OpenAPI spec created by FastAPI"
+class="gallery-image"
+data-flex-grow="130"
+data-flex-basis="312px"
+>&lt;/p>
+&lt;h2 id="highlights">
+&lt;a href="#highlights">#&lt;/a>
+Highlights
+&lt;/h2>&lt;ul>
+&lt;li>&lt;strong>FastAPI Framework&lt;/strong>: Ensures fast, secure, and easy deployment.&lt;/li>
+&lt;li>&lt;strong>Tested Sample Code&lt;/strong>: Includes a regression model to get you started quickly.&lt;/li>
+&lt;li>&lt;strong>Comprehensive Documentation&lt;/strong>: Guides on installation, setup, and API usage.&lt;/li>
+&lt;li>&lt;strong>Open Source&lt;/strong>: Available under the Apache-2.0 license.&lt;/li>
+&lt;/ul>
+&lt;h2 id="usage">
+&lt;a href="#usage">#&lt;/a>
+Usage
+&lt;/h2>&lt;p>To use this skeleton, clone the repository and follow the setup instructions provided. It covers everything from installation and running the local server to API authentication. This framework is designed to be scalable, allowing for easy expansion and integration of various machine learning models.&lt;/p>
+&lt;p>For more details, visit the &lt;a class="link" href="https://github.com/eightBEC/fastapi-ml-skeleton" target="_blank" rel="noopener"
+>GitHub repository&lt;/a>.&lt;/p>
+&lt;p>For feedback, issues and pull requests, please refer to the linked repository.&lt;/p></description></item></channel></rss>

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AI on Jan's Blog</title><link>https://iamjanforster.de/categories/ai/</link><description>Recent content in AI on Jan's Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 10 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://iamjanforster.de/categories/ai/index.xml" rel="self" type="application/rss+xml"/><item><title>A simple FastAPI boilerplate for ML models</title><link>https://iamjanforster.de/p/fastapi-ml-skeleton/</link><pubDate>Fri, 10 Nov 2023 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/fastapi-ml-skeleton/</guid><description>&lt;h2 id="summary">
+&lt;a href="#summary">#&lt;/a>
+Summary
+&lt;/h2>&lt;p>I&amp;rsquo;ve created a GitHub repository named &amp;ldquo;fastapi-ml-skeleton&amp;rdquo; to simplify the deployment of machine learning models into production. Utilizing FastAPI, this project offers a robust framework for serving models securely and efficiently. The repository includes a tested example using a regression model for demonstrating house price predictions, targeting Python 3.11+ environments and employing Poetry for dependency management.&lt;/p>
+&lt;p>FastAPI creates a OpenAPI documention which you can directly use in Postman or generate code from for your client consuming this boilerplate code.
+&lt;img src="https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload.jpg"
+width="2100"
+height="1615"
+srcset="https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload_hu0f4f99d8bb23995de7ac4506bf940a6f_451721_480x0_resize_q75_box.jpg 480w, https://iamjanforster.de/p/fastapi-ml-skeleton/sample_payload_hu0f4f99d8bb23995de7ac4506bf940a6f_451721_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="OpenAPI spec created by FastAPI"
+class="gallery-image"
+data-flex-grow="130"
+data-flex-basis="312px"
+>&lt;/p>
+&lt;h2 id="highlights">
+&lt;a href="#highlights">#&lt;/a>
+Highlights
+&lt;/h2>&lt;ul>
+&lt;li>&lt;strong>FastAPI Framework&lt;/strong>: Ensures fast, secure, and easy deployment.&lt;/li>
+&lt;li>&lt;strong>Tested Sample Code&lt;/strong>: Includes a regression model to get you started quickly.&lt;/li>
+&lt;li>&lt;strong>Comprehensive Documentation&lt;/strong>: Guides on installation, setup, and API usage.&lt;/li>
+&lt;li>&lt;strong>Open Source&lt;/strong>: Available under the Apache-2.0 license.&lt;/li>
+&lt;/ul>
+&lt;h2 id="usage">
+&lt;a href="#usage">#&lt;/a>
+Usage
+&lt;/h2>&lt;p>To use this skeleton, clone the repository and follow the setup instructions provided. It covers everything from installation and running the local server to API authentication. This framework is designed to be scalable, allowing for easy expansion and integration of various machine learning models.&lt;/p>
+&lt;p>For more details, visit the &lt;a class="link" href="https://github.com/eightBEC/fastapi-ml-skeleton" target="_blank" rel="noopener"
+>GitHub repository&lt;/a>.&lt;/p>
+&lt;p>For feedback, issues and pull requests, please refer to the linked repository.&lt;/p></description></item><item><title>Reinforcement Learning</title><link>https://iamjanforster.de/p/reinforcement-learning-policies/</link><pubDate>Mon, 13 Nov 2017 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/reinforcement-learning-policies/</guid><description>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/cover.jpg" alt="Featured image of post Reinforcement Learning" />&lt;p>In my last post, I wrote about µniverse, a great framework for training game agents using Reinforcement Learning. After training a lot of agents and playing around with µniverse, I found out that training my agent on the game StackTower is not working as good as for other games like e.g. Doodle Jump.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/human-gameplay.gif"
+width="320"
+height="480"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/human-gameplay_hucb0b755f4cfbd1f75f9a7d262cd2543c_818483_480x0_resize_box_1.gif 480w, https://iamjanforster.de/p/reinforcement-learning-policies/human-gameplay_hucb0b755f4cfbd1f75f9a7d262cd2543c_818483_1024x0_resize_box_1.gif 1024w"
+loading="lazy"
+alt="Me playing StackTower - trying hard"
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="160px"
+>&lt;/p>
+&lt;p>The goal of StackTower is to stack as many blocks as possible on the platform. Each block fades in from east → west or north → south. Once the block reaches a good position, one can drop it by pressing a key. On the left you see me playing the game. I had luck with my first block, but the consecutive blocks were badly positioned.&lt;/p>
+&lt;p>Before we dive into the issue, the agent is facing in this game, let&amp;rsquo;s have a quick recap of Reinforcement Learning.&lt;/p>
+&lt;hr>
+&lt;p>Reinforcement Learning consists of five basic concepts:&lt;/p>
+&lt;ol>
+&lt;li>The &lt;strong>Agent&lt;/strong>, our actor who is looking to maximize its reward for actions in a given environment.&lt;/li>
+&lt;li>An &lt;strong>Environment&lt;/strong>, which serves as a place for our actor to act in and discover, e.g. a game like Super Mario.&lt;/li>
+&lt;li>A &lt;strong>State&lt;/strong>, that describes the current status of the environment.&lt;/li>
+&lt;li>&lt;strong>Actions&lt;/strong>, which can be performed by the agent to change the state in an environment, like jumping to get a coin in Super Mario.&lt;/li>
+&lt;li>The &lt;strong>Reward&lt;/strong>, that could be earned by performing a certain action in a given state.&lt;/li>
+&lt;/ol>
+&lt;hr>
+&lt;p>Applied to StackTower we can see that the reward for this game is quite tricky. As humans, we intuitively know that the (long-term) reward is somehow related to our timing. The better the timing, the bigger the part of the block that remains on the platform. But this information is reflected nowhere in the game score. Whether the whole block is placed on the platform or just a part of it, the score will always be increased by one. Our agent might be able to learn this relationship, but it will take a lot of game episodes to do so.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/rl-env-action-agent-state-reward.webp"
+width="450"
+height="435"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/rl-env-action-agent-state-reward_hubd2e0f7ea041ca0cedfc562bbe114633_14896_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-policies/rl-env-action-agent-state-reward_hubd2e0f7ea041ca0cedfc562bbe114633_14896_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Source: Wikimedia.com, License: CC0 1.0"
+class="gallery-image"
+data-flex-grow="103"
+data-flex-basis="248px"
+>&lt;/p>
+&lt;hr>
+&lt;p>I&amp;rsquo;ve analyzed the reward as a function of episodes for StackTower as it can be seen in the following plot. For the episodes that were played by the agent without any bootstrapping (the ones left to the black line), we can see that the reward curve stays pretty flat. Especially when assuming this growth rate for the following episodes, we could expect an average reward of 6 per episode after playing 2000 episodes (orange line). Which means that the agent is able to stack up 6 blocks on top of each other after learning from 2000 episodes.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/rl-bootstrapping-results.webp"
+width="627"
+height="598"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/rl-bootstrapping-results_hu852b73dadc298991b6ecb147f391ec3a_24612_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-policies/rl-bootstrapping-results_hu852b73dadc298991b6ecb147f391ec3a_24612_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Episode Reward for Agent 1 (with and without bootstrapping)"
+class="gallery-image"
+data-flex-grow="104"
+data-flex-basis="251px"
+>&lt;/p>
+&lt;hr>
+&lt;p>On my machine this would take roughly 48 hours, so I wanted to speed up the whole process by supporting the agent. Therefore I&amp;rsquo;ve been using @unixpickle&amp;rsquo;s Demoverse to record my gameplay. The best score I was able to achieve on my machine, was 12 stacked blocks (red line in the plot). The average stack size was around 9. So I took 10 game recordings and used them to train the agent&amp;rsquo;s policy on those. As we can see in the above chart, the agent started to rapidly increase its average reward after updating the policy (the curve right to the black line).&lt;/p>
+&lt;p>And this is the agent playing StackTower after training on 2000 episodes, using bootstrapping after episode 800.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-policies/rl-system-gameplay.gif"
+width="230"
+height="345"
+srcset="https://iamjanforster.de/p/reinforcement-learning-policies/rl-system-gameplay_hufc86a0d714d6c93296c8f13dac8a4c78_8095268_480x0_resize_box_1.gif 480w, https://iamjanforster.de/p/reinforcement-learning-policies/rl-system-gameplay_hufc86a0d714d6c93296c8f13dac8a4c78_8095268_1024x0_resize_box_1.gif 1024w"
+loading="lazy"
+alt="The agent playing StackTower — way better than I&amp;rsquo;m able to."
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="160px"
+>&lt;/p>
+&lt;hr>
+&lt;p>If you enjoyed this post, please let me know. Follow me on &lt;a class="link" href="https://medium.com/@8B_EC" target="_blank" rel="noopener"
+>Medium&lt;/a> for the latest updates or just to say hi.&lt;/p></description></item><item><title>A quick look into µniverse</title><link>https://iamjanforster.de/p/reinforcement-learning-universe/</link><pubDate>Sun, 05 Nov 2017 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/reinforcement-learning-universe/</guid><description>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/cover.jpg" alt="Featured image of post A quick look into µniverse" />&lt;p>After working a couple of weeks with OpenAI&amp;rsquo;s Gym and Universe I&amp;rsquo;m still very excited to discover and learn all possibilities to train RL agents using those frameworks.&lt;/p>
+&lt;p>Unfortunately, it seems that there isn&amp;rsquo;t a huge community actively using Universe. I don&amp;rsquo;t know whether that&amp;rsquo;s related to the specific topic of RL or the challenges that come up when working with Universe due to its specific architecture as mentioned e.g. by Alex Nichol:&lt;/p>
+&lt;blockquote>
+&lt;p>… the biggest problem with Universe is that VNC and Flash need to run in real time. This means that any hiccups on your training machine […] might suddenly change the frame rate at which your AI experiences its virtual environment.&lt;/p>
+&lt;/blockquote>
+&lt;p>Therefore I was looking out for solutions to performance issues I faced when running more complex environments in Universe and came across µniverse. µniverse is developed by Alex Nichol aka unixpickle and providing environments to train RL agents for HTML5 games, which should improve the overall performance and complexity as RL agent training &amp;amp; development framework.&lt;/p>
+&lt;h2 id="installation">
+&lt;a href="#installation">#&lt;/a>
+Installation
+&lt;/h2>&lt;p>The installation of µniverse is pretty straightforward and documented on the µniverse Github page.
+Unixpickle also developed a µniverse-agent which provides ready-to-use agents based on popular concepts like PPO, TRPO, A3C.
+Available parameters can be shown by typing the following commands:&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent.webp"
+width="460"
+height="118"
+srcset="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent_hufff94c5ce872b8c4f5d30a78a9553f77_11732_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent_hufff94c5ce872b8c4f5d30a78a9553f77_11732_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Choosing different agents for µniverse"
+class="gallery-image"
+data-flex-grow="389"
+data-flex-basis="935px"
+>&lt;/p>
+&lt;p>Algorithm-specific parameters can be found by typing:&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent-models.webp"
+width="540"
+height="436"
+srcset="https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent-models_hu83dde9516e0255b2985944b93f863551_34654_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/reinforcement-learning-universe/universe-agent-models_hu83dde9516e0255b2985944b93f863551_34654_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Options for the µniverse A3C agent"
+class="gallery-image"
+data-flex-grow="123"
+data-flex-basis="297px"
+>&lt;/p>
+&lt;h2 id="training-an-agent">
+&lt;a href="#training-an-agent">#&lt;/a>
+Training an Agent
+&lt;/h2>&lt;p>I&amp;rsquo;ve chosen Doodle Jump as the first game to train A3C agents on, but you can choose from all games provided by µniverse. They can be found in the µniverse games folder. The naming is somehow similar to the naming conventions used in OpenAI&amp;rsquo;s Gym.
+To start the training process, the following command can be used:&lt;/p>
+&lt;p>muniverse-agent a3c -env DoodleJump-v0 -out doodlejump &amp;raquo; log_doodle.txt 2&amp;gt;&amp;amp;1
+The first and second parameters are pretty self-explanatory.&lt;/p>
+&lt;p>The out parameter provides a name where the trained policy is stored to and can be loaded from to continue training.&lt;/p>
+&lt;p>At the end of the command &amp;raquo; log_doodle.text 2&amp;gt;&amp;amp;1 is forwarding the output of the µniverse-agent to a log file we&amp;rsquo;ll use for performance analysis in a next article.&lt;/p>
+&lt;h2 id="observing-the-agent">
+&lt;a href="#observing-the-agent">#&lt;/a>
+Observing the Agent
+&lt;/h2>&lt;p>While the training is running you might have taken a look into the muniverse-agent&amp;rsquo;s folder to search for some kind of visualization of the agent&amp;rsquo;s current state. One way to get an understanding of the agent&amp;rsquo;s performance is to take a look at the log file created in the previous step. Another way is to visualize the agent&amp;rsquo;s interactions with the environment. In our case the Doodle Jump gameplay.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/reinforcement-learning-universe/doodle.gif"
+width="320"
+height="480"
+srcset="https://iamjanforster.de/p/reinforcement-learning-universe/doodle_hu3e6fd1e3da7a2932c0311594a6aa89b4_1997167_480x0_resize_box_1.gif 480w, https://iamjanforster.de/p/reinforcement-learning-universe/doodle_hu3e6fd1e3da7a2932c0311594a6aa89b4_1997167_1024x0_resize_box_1.gif 1024w"
+loading="lazy"
+alt="Agent playing Doodle Jump"
+class="gallery-image"
+data-flex-grow="66"
+data-flex-basis="160px"
+>
+This can simply be done by stopping the training and adding the flag -record &amp;lt;PATH_TO_RECORDING_FOLDER&amp;gt;. Restarting the agent will create a couple hundred images containing &amp;ldquo;screenshots&amp;rdquo; of the agent&amp;rsquo;s game play.&lt;/p>
+&lt;h2 id="next-steps">
+&lt;a href="#next-steps">#&lt;/a>
+Next Steps
+&lt;/h2>&lt;p>In the next article I will show you an easy way to visualize the agent&amp;rsquo;s performance based on the logs we&amp;rsquo;ve created in this little tutorial. I&amp;rsquo;m really looking forward to see what kind of frameworks unixpickle, OpenAI and other companies will work on in the future.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/human-gameplay.gif"
+loading="lazy"
+alt="Me playing StackTower - trying hard"
+>&lt;/p>
+&lt;hr>
+&lt;p>If you enjoyed this post, please let me know. Follow me on &lt;a class="link" href="https://medium.com/@8B_EC" target="_blank" rel="noopener"
+>Medium&lt;/a> for the latest updates or just to say hi.&lt;/p></description></item><item><title>How to setup OpenAI Universe in Windows using Docker</title><link>https://iamjanforster.de/p/openai-universe/</link><pubDate>Sun, 15 Oct 2017 00:00:00 +0000</pubDate><guid>https://iamjanforster.de/p/openai-universe/</guid><description>&lt;img src="https://iamjanforster.de/p/openai-universe/cover.jpg" alt="Featured image of post How to setup OpenAI Universe in Windows using Docker" />&lt;p>When I first heard about OpenAI Universe, I wanted to start playing around with it as quickly as possible. Universe was released as&lt;/p>
+&lt;blockquote>
+&lt;p>…, a software platform for measuring and training an AI&amp;rsquo;s general intelligence across the world&amp;rsquo;s supply of games, websites and other applications.&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/agent-interaction.webp"
+width="1400"
+height="402"
+srcset="https://iamjanforster.de/p/openai-universe/agent-interaction_hu6478cb8b0193693d1df2169172d5f784_14346_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/agent-interaction_hu6478cb8b0193693d1df2169172d5f784_14346_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Agent Interaction - Source: https://blog.openai.com/universe/"
+class="gallery-image"
+data-flex-grow="348"
+data-flex-basis="835px"
+>&lt;/p>
+&lt;p>But soon I had to realize that Windows isn&amp;rsquo;t probably the best OS to use as a starting point as it is currently not supported by OpenAI Universe. So my first naive idea was to setup up an Ubuntu VM and get the Universe Starter Agent going. Although my machine had a new i7 and 32 GB of memory the results were disappointing — even if I only ran 4 agents.&lt;/p>
+&lt;p>I&amp;rsquo;ve never managed to reduce the reaction time to less than 60 ms in the Pong environment.&lt;/p>
+&lt;p>So a guest Ubuntu wasn&amp;rsquo;t the way to go. Buying a new SSD and installing Ubuntu would have taken too much time and AWS EC2 wasn&amp;rsquo;t an alternative, so I decided to try out Docker.&lt;/p>
+&lt;h2 id="setup">
+&lt;a href="#setup">#&lt;/a>
+Setup
+&lt;/h2>&lt;p>So I followed the instructions on the OpenAI Universe Github page:
+To get started, open a Docker Quickstart Terminal as Admin and clone the universe repo:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">git clone https://github.com/openai/universe.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> universe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Build a docker image, tag it as &amp;lsquo;universe&amp;rsquo;:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker build -t universe .
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>If the error &amp;ldquo;Error response from daemon: client is newer than server (client API version: 1.24, server API version: 1.23)&amp;rdquo;. pops up, you may have to run the following command to circumvent an issue due to an older Docker Toolbox Installation on Windows 7:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">DOCKER_API_VERSION&lt;/span>&lt;span class="o">=&lt;/span>1.23
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>The next step is to start a container from universe image. The -p switches are used to redirect the ports of Tensorboard and the VNC outputs to access them from your Windows machine later on.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker run --privileged --rm -it -p 12345:12345 -p 5900:5900 -e &lt;span class="nv">DOCKER_NET_HOST&lt;/span>&lt;span class="o">=&lt;/span>172.17.0.1 universe /bin/bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Because of the -it switch and the /bin/bash command you should find yourself in a pseudo tty pointing to the directory /usr/locasl/universe&lt;/p>
+&lt;p>A prerequisite for installing the universe-starter-agent is Miniconda.&lt;/p>
+&lt;p>Download the latest installer using wget in your container:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sh" data-lang="sh">&lt;span class="line">&lt;span class="cl">wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Start the installation typing:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">bash ./Miniconda3-latest-Linux-x86_64.sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>and confirm the prompts.&lt;/p>
+&lt;p>Once Miniconda is installed, follow the installation instructions given on [https://github.com/openai/universe-starter-agent]&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">conda create --name universe-starter-agent &lt;span class="nv">python&lt;/span>&lt;span class="o">=&lt;/span>3.5
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">source&lt;/span> /root/minconda3/bin/activate universe-starter-agent
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">apt-get install -y tmux htop cmake golang libjpeg-dev
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install “gym&lt;span class="o">[&lt;/span>atari&lt;span class="o">]&lt;/span>”
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install universe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install six
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pip install tensorflow
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">conda install -y -c https://conda.binstar.org/menpo opencv3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">conda install -y numpy
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">conda install -y scipy
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Now you have everything installed to start using the universe-starter-agent. It&amp;rsquo;s a good time to commit the changes to your universe docker image.&lt;/p>
+&lt;p>Run docker ps to get the container id, then run&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">docker commit &amp;lt;CONTAINER_ID&amp;gt; universe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="test-run">
+&lt;a href="#test-run">#&lt;/a>
+Test Run
+&lt;/h2>&lt;p>Make sure you&amp;rsquo;re in the universe-starter-agent folder and in the correct conda environment by running the following command in your container bash:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> universe-starter-agent &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nb">source&lt;/span> /root/miniconda3/bin/activate universe-starter-agent
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Start Pacman to see if everything is working correctly by running:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">python train.py — num-workers &lt;span class="m">2&lt;/span> — env-id gym-core.MsPacman-v0 — log-dir /tmp/pacman
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Now you should see a similar output on your screen:
+&lt;img src="https://iamjanforster.de/p/openai-universe/pacman-session.webp"
+width="1397"
+height="523"
+srcset="https://iamjanforster.de/p/openai-universe/pacman-session_hua777ea83c5bf17be052bf6ba68a3a453_69988_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/pacman-session_hua777ea83c5bf17be052bf6ba68a3a453_69988_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Pacman session with 2 workers starting in container"
+class="gallery-image"
+data-flex-grow="267"
+data-flex-basis="641px"
+>&lt;/p>
+&lt;p>You can now issue the command tmux a to browse through the different sessions that were started to make sure the workers are running correctly. When starting the workers for the first time, they&amp;rsquo;ll pull a container with all the necessary tools needed, which might take a couple of minutes.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/tmux-screen.webp"
+width="1009"
+height="447"
+srcset="https://iamjanforster.de/p/openai-universe/tmux-screen_hu9bdac633c1703438fe32b3f1ea56dba6_65744_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/tmux-screen_hu9bdac633c1703438fe32b3f1ea56dba6_65744_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="tmux screen"
+class="gallery-image"
+data-flex-grow="225"
+data-flex-basis="541px"
+>&lt;/p>
+&lt;p>In tmux you can change between the different processes (workers, tensorboard, orchestrator and htop) by entering &lt;code>CTRL+b [0–4]&lt;/code>. Return to bash by pressing &lt;code>CTRL+b d&lt;/code>.&lt;/p>
+&lt;h2 id="watching-your-agents-play">
+&lt;a href="#watching-your-agents-play">#&lt;/a>
+Watching your Agents Play
+&lt;/h2>&lt;p>If the workers are running correctly and your agents start training, you can view the details in Tensorboard from your Windows machine&amp;rsquo;s browser. The only thing you need is the IP your Docker is running with. You can see the default machine&amp;rsquo;s IP when starting a new Docker Quickstart Terminal:&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/docker.webp"
+width="832"
+height="323"
+srcset="https://iamjanforster.de/p/openai-universe/docker_hu59222453ab13af77e6335817e10ebc61_14852_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/docker_hu59222453ab13af77e6335817e10ebc61_14852_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Docker Quickstart Terminal startup screen for default machine on Windows 7"
+class="gallery-image"
+data-flex-grow="257"
+data-flex-basis="618px"
+>&lt;/p>
+&lt;p>Just enter &lt;code>&amp;lt;YOUR_DOCKER_IP&amp;gt;:12345&lt;/code> and Tensorboard should open up.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/tensorboard.jpg"
+width="1896"
+height="896"
+srcset="https://iamjanforster.de/p/openai-universe/tensorboard_huf0f94727527e7e470168c5bbabb04c03_284273_480x0_resize_q75_box.jpg 480w, https://iamjanforster.de/p/openai-universe/tensorboard_huf0f94727527e7e470168c5bbabb04c03_284273_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Tensorboard"
+class="gallery-image"
+data-flex-grow="211"
+data-flex-basis="507px"
+>&lt;/p>
+&lt;p>To view the agents playing, use the VNC viewer of your choice and connect it to one of the VNC ports. You can get ports by running docker ps in your Docker Terminal. This returns a list of your primary container and the child containers with your workers. Each worker routes its VNC port 5900 to a free port e.g. 5901 as shown in the figure below.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/vnc-workers.webp"
+width="1399"
+height="169"
+srcset="https://iamjanforster.de/p/openai-universe/vnc-workers_hu8c35194e03eee92d643dea7090955f57_28178_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/vnc-workers_hu8c35194e03eee92d643dea7090955f57_28178_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Worker VNC ports (yellow)"
+class="gallery-image"
+data-flex-grow="827"
+data-flex-basis="1986px"
+>
+When connecting to a VNC output, enter openai as password and you should see the agent playing.&lt;/p>
+&lt;p>&lt;img src="https://iamjanforster.de/p/openai-universe/worker-playing-pacman.webp"
+width="638"
+height="266"
+srcset="https://iamjanforster.de/p/openai-universe/worker-playing-pacman_hu635aa644c2d0ee49d89171f22b602fc6_10222_480x0_resize_q75_h2_box_2.webp 480w, https://iamjanforster.de/p/openai-universe/worker-playing-pacman_hu635aa644c2d0ee49d89171f22b602fc6_10222_1024x0_resize_q75_h2_box_2.webp 1024w"
+loading="lazy"
+alt="Worker 1 playing Pacman"
+class="gallery-image"
+data-flex-grow="239"
+data-flex-basis="575px"
+>
+Entering tmux kill-session will stop your workers. If you want to reuse your models in a next training session, think of mounting your Windows filesystem to docker to transfer the log-dir contents to your local machine.&lt;/p>
+&lt;hr>
+&lt;p>I hope my little how-to supported you to get OpenAI universe running on your Windows machine.&lt;/p>
+&lt;p>If you enjoyed this post, please let me know. Follow me on &lt;a class="link" href="https://medium.com/@8B_EC" target="_blank" rel="noopener"
+>Medium&lt;/a> for the latest updates or just to say hi.&lt;/p>
+&lt;blockquote>
+&lt;p>Image source: &lt;a class="link" href="Image" >https://www.flickr.com/photos/textfiles/27228418683/&lt;/a> licensed under the Creative Commons Attribution 2.0 Generic&lt;/p>
+&lt;/blockquote></description></item></channel></rss>
